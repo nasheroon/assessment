@@ -1,9 +1,11 @@
 .form-group.hidden {
     width: 0;
     margin: 0;
+    content: none;
     border: none;
     padding: 0;
   }
+
   .custom-day {
     text-align: center;
     padding: 0.185rem 0.25rem;

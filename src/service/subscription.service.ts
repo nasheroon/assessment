@@ -1,24 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Subscription } from '../model/subscription';
 import { Invoice } from '../model/invoice';
 import { Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class SubscriptionService {
 
-  private invoice: Observable<Invoice>;
+  invoiceData: Observable<Invoice>;
   private subscriptionUrl: string;
 
   constructor(private http: HttpClient) {
     this.subscriptionUrl = 'http://localhost:8080/api/subscription/';
   }
 
-  public save(subscription: Subscription){
-    this.http.post<Invoice>(this.subscriptionUrl, subscription).subscribe(result => this.invoice);
+  public save(subscription: Subscription): Observable<Invoice> {
+    this.invoiceData = this.http.post<Invoice>(this.subscriptionUrl, subscription);
+    return this.invoiceData;
   }
 
   public get(){
-    return this.invoice;
+    return this.invoiceData;
   }
 }

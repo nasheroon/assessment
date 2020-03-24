@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormBuilder } from '@angular/forms';
 import { SubscriptionService } from '../../service/subscription.service';
-import { Subscription } from '../../model/subscription';
-import { Invoice } from '../../model/invoice';
 import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { Invoice } from '../../model/invoice';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-subscription',
@@ -12,22 +13,42 @@ import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-b
 })
 export class SubscriptionComponent {
 
-  subscription: Subscription;
+  subscriptionForm;
   invoice: Invoice;
+  invoiceData: Observable<Invoice>;
 
   constructor( 
     private router:Router, 
     private subscriptionService: SubscriptionService,
+    private formBuilder: FormBuilder,
     private calendar: NgbCalendar, 
     public formatter: NgbDateParserFormatter) {
-    this.subscription = new Subscription();
-    this.invoice = new Invoice();
+    this.subscriptionForm = this.formBuilder.group({
+      amount: '',
+      type: 'DAILY',
+      day: '',
+      fromDate: '',
+      toDate: '',
+    });
+
     this.fromDate = calendar.getToday();
     this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
   }
 
-  onSubmit() {
-    this.subscriptionService.save(this.subscription);
+  onSubmit(subscriptionForm) {
+    subscriptionForm.fromDate = this.addZero(this.fromDate.day) + '/' + this.addZero(this.fromDate.month) + '/' + this.fromDate.year;
+    subscriptionForm.toDate = this.addZero(this.toDate.day) + '/' + this.addZero(this.toDate.month) + '/' + this.toDate.year;
+    
+    this.invoiceData = this.subscriptionService.save(subscriptionForm);
+    this.router.navigate(['/invoice']);
+    
+  }
+
+  addZero(num: Number) : string {
+    if(num < 10) {
+      return "0" + num;
+    }
+    return "" + num;
   }
 
   hoveredDate: NgbDate | null = null;

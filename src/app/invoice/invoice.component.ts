@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { SubscriptionService } from '../../service/subscription.service';
 import { Invoice } from 'src/model/invoice';
 import { Observable } from 'rxjs';
@@ -11,14 +10,16 @@ import { Observable } from 'rxjs';
 })
 export class InvoiceComponent implements OnInit {
 
-  invoice: Observable<Invoice>;
+  show = true;
+  invoice: Invoice;
+  invoiceData: Observable<Invoice>;
 
-  constructor(private route: ActivatedRoute, subscriptionService: SubscriptionService) { 
-    this.invoice = subscriptionService.get();
+  constructor(private subscriptionService: SubscriptionService) { 
+    this.invoiceData = this.subscriptionService.get();
   }
 
   ngOnInit() {
-    
+    this.invoiceData.subscribe(invoice => this.invoice = invoice);
   }
 
 }
